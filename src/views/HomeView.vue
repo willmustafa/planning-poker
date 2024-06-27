@@ -1,9 +1,37 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+import { ref } from 'vue'
+import { useRepositoryController } from '@/controllers/repository.controller'
+import { useToast } from 'vue-toastification'
+import { useUserStore } from '@/stores/user.store'
+import { useRouter } from 'vue-router'
+
+const nickname = ref('')
+const { createSessionAndUser } = useRepositoryController()
+const toast = useToast()
+const router = useRouter()
+const userStore = useUserStore()
+
+async function startSession() {
+  if (!nickname.value) toast.error('Insira seu nome')
+  else {
+    const user = await createSessionAndUser(nickname.value)
+    if (user) {
+      userStore.user = user[0]
+      await router.push(`/${userStore.user?.session_id}`)
+    } else toast.error('Ocorreu um erro para criar a sessão')
+  }
+}
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+  <div class="d-flex vw-100 vh-100 align-items-center justify-content-center flex-column gap-3">
+    <h1>Iniciar nova sessão</h1>
+    <div class="d-flex flex-column">
+      <div class="mb-3">
+        <label class="form-label">Seu Nome</label>
+        <input class="form-control" type="text" name="nickname" v-model="nickname" />
+      </div>
+      <button class="btn btn-success" @click="startSession">Começar!</button>
+    </div>
+  </div>
 </template>

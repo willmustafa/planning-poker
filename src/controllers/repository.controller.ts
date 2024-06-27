@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
-import { userSchema } from '@/schemas/user.schema'
+import { userSchema, type userType } from '@/schemas/user.schema'
 import { ref, type Ref } from 'vue'
+import type { InferType } from 'yup'
 
 export const useRepositoryController = () => {
   const supabase = createClient(
@@ -23,7 +24,7 @@ export const useRepositoryController = () => {
     return data
   }
 
-  async function createUser(user: typeof userSchema) {
+  async function createUser(user: userType) {
     const parsedUser = userSchema.cast(user)
     const { data, error } = await supabase
       .from('session_users')
@@ -33,6 +34,17 @@ export const useRepositoryController = () => {
       })
       .select()
     return data
+  }
+
+  async function createSessionAndUser(nickname: string) {
+    const session = await createSession()
+    const user = await createUser(
+      userSchema.cast({
+        nickname,
+        session_id: session?.[0]?.session_id
+      })
+    )
+    return user
   }
 
   async function updatePoints(user: typeof userSchema) {
@@ -45,7 +57,7 @@ export const useRepositoryController = () => {
     return data
   }
 
-  function listenToSession(sessionId: string, session: Ref<any>) {
+  function listenToSession(sessionId: string) {
     const channel = supabase
       .channel(`session_users`)
       .on(
@@ -67,7 +79,6 @@ export const useRepositoryController = () => {
         }
       )
       .subscribe()
-    console.log(channel)
   }
 
   return {
@@ -75,6 +86,7 @@ export const useRepositoryController = () => {
     createUser,
     updatePoints,
     listenToSession,
-    sessionUsers
+    sessionUsers,
+    createSessionAndUser
   }
 }
