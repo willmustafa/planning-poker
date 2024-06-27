@@ -53,7 +53,7 @@ defineProps({
   cursor: pointer;
   pointer-events: visible;
   opacity: 0.7;
-  transition: all 0.6s ease;
+  transition: all 0.4s ease;
 }
 .card-wrapper:not(.small) {
   max-width: 90px;
