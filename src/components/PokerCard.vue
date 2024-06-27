@@ -1,21 +1,46 @@
 <script setup lang="ts">
 defineProps({
   point: [Number, String],
-  isSmall: Boolean
+  isSmall: Boolean,
+  isHidden: Boolean
 })
 </script>
 
 <template>
   <div>
-    <div class="card-wrapper" :class="{ small: isSmall }">
-      <span class="fixed-point fixed-point-top">{{ point }}</span>
-      <div>{{ point }}</div>
-      <span class="fixed-point fixed-point-bottom">{{ point }}</span>
-    </div>
+    <Transition name="flip" mode="out-in">
+      <div class="card-hidden" v-if="isHidden"></div>
+      <div v-else class="card-wrapper" :class="{ small: isSmall }">
+        <span class="fixed-point fixed-point-top">{{ point }}</span>
+        <div>{{ point }}</div>
+        <span class="fixed-point fixed-point-bottom">{{ point }}</span>
+      </div>
+    </Transition>
   </div>
 </template>
 
 <style scoped>
+.flip-enter-active,
+.flip-leave-active {
+  transition: all 0.2s;
+}
+.flip-enter,
+.flip-leave-to {
+  transform: translate(-50%, -50%) rotateY(-90deg);
+}
+.flip-enter-from,
+.flip-leave-from {
+  transform: translate(-50%, -50%) rotateY(-90deg);
+}
+
+.card-hidden {
+  width: 50px;
+  height: 80px;
+  background-image: url('@/assets/card-background.jpg');
+  background-size: cover;
+  border-radius: var(--border-radius);
+}
+
 .card-wrapper {
   background-color: #fff;
   border-radius: var(--border-radius);

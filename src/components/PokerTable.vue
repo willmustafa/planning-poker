@@ -9,49 +9,52 @@ const isRevealed = ref()
     <div class="users-wrapper users-left d-flex flex-column">
       <div class="user col d-flex align-items-center">
         <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" />
+        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
       </div>
       <div class="user col d-flex align-items-center">
         <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" />
+        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
       </div>
     </div>
     <div class="users-wrapper users-right d-flex flex-column">
       <div class="user col d-flex align-items-center">
-        <PokerCard point="2" isSmall class="active" />
+        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
         <span>João de almeida</span>
       </div>
       <div class="user col d-flex align-items-center">
-        <PokerCard point="2" isSmall class="active" />
+        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
         <span>João de almeida</span>
       </div>
     </div>
     <div class="users-wrapper users-top d-flex">
       <div class="user col d-flex align-items-center flex-column text-center">
         <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" />
+        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
       </div>
       <div class="user col d-flex align-items-center flex-column text-center">
         <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" />
+        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
       </div>
       <div class="user col d-flex align-items-center flex-column text-center">
         <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" />
+        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
       </div>
       <div class="user col d-flex align-items-center flex-column text-center">
         <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" />
+        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
       </div>
     </div>
     <div class="background"></div>
     <div class="info-wrapper d-flex flex-column align-items-center">
       <div class="info mt-auto d-flex gap-1 flex-column align-items-center py-3">
-        <span>EV-580</span>
+        <input type="text" class="form-control task-input mb-2" placeholder="Digite o card" />
         <button class="btn btn-info" v-if="!isRevealed" @click="isRevealed = !isRevealed">
           Revelar
         </button>
-        <span v-else>Média: 4,5</span>
+        <div v-else>
+          <span>Média: 4,5</span>
+          <button class="btn btn-info ms-4" @click="isRevealed = !isRevealed">Resetar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -126,5 +129,18 @@ const isRevealed = ref()
 
 .user > span {
   width: 120px;
+}
+
+.task-input {
+  background: transparent;
+  border-left: none;
+  border-top: none;
+  border-right: none;
+  text-align: center;
+  border-radius: 0;
+}
+
+.task-input:focus {
+  background: #fff;
 }
 </style>
