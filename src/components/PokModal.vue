@@ -5,7 +5,7 @@ defineProps({
 </script>
 
 <template>
-  <div>
+  <div v-if="isOpen">
     <div class="modal-backdrop fade" :class="{ show: isOpen }"></div>
     <div
       class="modal fade modal-dialog-centered"

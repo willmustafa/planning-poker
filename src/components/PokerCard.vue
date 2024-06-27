@@ -1,12 +1,13 @@
 <script setup lang="ts">
 defineProps({
-  point: [Number, String]
+  point: [Number, String],
+  isSmall: Boolean
 })
 </script>
 
 <template>
   <div>
-    <div class="card-wrapper">
+    <div class="card-wrapper" :class="{ small: isSmall }">
       <span class="fixed-point fixed-point-top">{{ point }}</span>
       <div>{{ point }}</div>
       <span class="fixed-point fixed-point-bottom">{{ point }}</span>
@@ -27,20 +28,34 @@ defineProps({
   cursor: pointer;
   pointer-events: visible;
   opacity: 0.7;
+  transition: all 0.6s ease;
+}
+.card-wrapper:not(.small) {
   max-width: 90px;
   height: 150px;
-  transition: all 0.6s ease;
+}
+.card-wrapper.small {
+  width: 50px;
+  height: 80px;
+}
+.small > div {
+  font-size: 12px !important;
 }
 
 .unset .card-wrapper {
   opacity: 1;
 }
 
-.card-wrapper:hover,
-.active .card-wrapper {
+.card-wrapper:not(.small):hover,
+.active .card-wrapper:not(.small) {
   opacity: 1;
   border-color: #2c8dfe;
   margin-bottom: 2rem;
+}
+
+.card-wrapper:hover,
+.active .card-wrapper {
+  opacity: 1;
 }
 
 .card-wrapper > div {
@@ -55,6 +70,11 @@ defineProps({
   font-weight: bold;
 }
 
+.small .fixed-point {
+  width: 20px;
+  height: 20px;
+}
+
 .fixed-point {
   position: absolute;
   background-color: #fff;
@@ -67,6 +87,7 @@ defineProps({
   justify-content: center;
   align-items: center;
 }
+
 .fixed-point-top {
   left: 0;
   top: 0;

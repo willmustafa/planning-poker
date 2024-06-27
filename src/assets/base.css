@@ -4,15 +4,23 @@
     --dark: #191D2D;
     --light: #F7F7F7;
     --border-radius: 8px;
+    --blue-light: #7499D6;
+    --blue-dark: #304464;
 
     --background: var(--light);
     --text-color: var(--dark);
+
+    --table-stroke: #fff;
+    --table-background: #EAEAEA;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
         --background: var(--dark);
         --text-color: var(--light);
+
+        --table-stroke: var(--blue-light);
+        --table-background: var(--blue-dark);
     }
 }
 

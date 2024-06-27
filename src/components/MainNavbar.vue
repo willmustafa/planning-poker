@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark py-4 fixed-top">
+  <nav class="navbar navbar-expand-lg py-4 fixed-top">
     <div class="container">
       <a class="navbar-brand fw-bold" href="#">Poker Planning Free</a>
       <button
@@ -26,4 +26,13 @@
   </nav>
 </template>
 
-<style scoped></style>
+<style scoped>
+.navbar-brand {
+  color: var(--text-color);
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link.show {
+  color: var(--text-color);
+}
+</style>
