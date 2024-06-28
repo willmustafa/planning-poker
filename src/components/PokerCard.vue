@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { PropType } from 'vue'
+
 defineProps({
   point: {
-    type: [Number],
-    required: false
+    type: null as unknown as PropType<number | null | undefined>
   },
   isSmall: Boolean,
   isHidden: Boolean
