@@ -16,7 +16,7 @@ export const useSessionController = () => {
   async function createSession() {
     return fetch
       .from('sessions')
-      .insert({ info: [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89] })
+      .insert({ info: { points: [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89] } })
       .select()
   }
 
