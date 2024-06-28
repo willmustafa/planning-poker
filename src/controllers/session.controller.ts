@@ -16,8 +16,16 @@ export const useSessionController = () => {
   async function createSession() {
     return fetch
       .from('sessions')
-      .insert({ info: { points: [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89] } })
+      .insert({ info: { points: [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89], revealed: false } })
       .select()
+  }
+
+  async function updateSession() {
+    if (sessionStore.session?.info)
+      return fetch
+        .from('sessions')
+        .update({ info: sessionStore.session.info })
+        .eq('session_id', sessionStore.session.session_id)
   }
 
   async function getSession(session_id: string) {
@@ -62,6 +70,7 @@ export const useSessionController = () => {
     listenToSession,
     createSessionAndUser,
     getSession,
+    updateSession,
     session
   }
 }

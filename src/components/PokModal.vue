@@ -33,4 +33,9 @@ defineProps({
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.modal-title,
+.modal-body {
+  color: var(--text-color);
+}
+</style>

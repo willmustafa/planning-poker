@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import PokerCard from '@/components/PokerCard.vue'
 import { computed, ref } from 'vue'
-
 import type { userType } from '@/schemas/user.schema'
 import { useUserStore } from '@/stores/user.store'
 import { useUserController } from '@/controllers/user.controller'
-const isRevealed = ref()
+import { useSessionStore } from '@/stores/session.store'
+
 const userStore = useUserStore()
+const sessionStore = useSessionStore()
+const isRevealed = computed(() => sessionStore.session?.info.revealed ?? false)
 const { resetPoints } = useUserController()
 const sessionUsers = computed(() => userStore.usersInSession)
 
@@ -30,8 +32,12 @@ const sessionUsersGrouped = computed(() => {
 })
 
 function resetGame() {
-  isRevealed.value = !isRevealed.value
+  if (sessionStore.session) sessionStore.session.info.revealed = false
   resetPoints()
+}
+
+function reveal() {
+  if (sessionStore.session) sessionStore.session.info.revealed = true
 }
 
 const median = computed(() => {
@@ -78,9 +84,7 @@ const median = computed(() => {
     <div class="info-wrapper d-flex flex-column align-items-center">
       <div class="info mt-auto d-flex gap-1 flex-column align-items-center py-3">
         <input type="text" class="form-control task-input mb-2" placeholder="Digite o card" />
-        <button class="btn btn-info" v-if="!isRevealed" @click="isRevealed = !isRevealed">
-          Revelar
-        </button>
+        <button class="btn btn-info" v-if="!isRevealed" @click="reveal">Revelar</button>
         <div v-else>
           <span>Média: {{ median.toFixed(2) }}</span>
           <button class="btn btn-info ms-4" @click="resetGame">Resetar</button>
