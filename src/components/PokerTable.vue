@@ -1,47 +1,77 @@
 <script setup lang="ts">
 import PokerCard from '@/components/PokerCard.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+
+import type { userType } from '@/schemas/user.schema'
+import { useUserStore } from '@/stores/user.store'
+import { useUserController } from '@/controllers/user.controller'
 const isRevealed = ref()
+const userStore = useUserStore()
+const { resetPoints } = useUserController()
+const sessionUsers = computed(() => userStore.usersInSession)
+
+const sessionUsersGrouped = computed(() => {
+  const _sessionUsers = [...sessionUsers.value]
+  const result: userType[][] = []
+
+  for (let i = 0; i < 2; i++) {
+    if (_sessionUsers.length > 2) {
+      result.push(_sessionUsers.splice(0, 2))
+    } else {
+      break
+    }
+  }
+
+  if (_sessionUsers.length > 0) {
+    result.push(_sessionUsers)
+  }
+
+  return result
+})
+
+function resetGame() {
+  isRevealed.value = !isRevealed.value
+  resetPoints()
+}
+
+const median = computed(() => {
+  return (
+    sessionUsers.value.reduce((acc, currentUser) => (acc = (currentUser.points || 0) + acc), 0) /
+    sessionUsers.value.length
+  )
+})
 </script>
 
 <template>
   <div class="poker-table col-8">
-    <div class="users-wrapper users-left d-flex flex-column">
-      <div class="user col d-flex align-items-center">
-        <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
-      </div>
-      <div class="user col d-flex align-items-center">
-        <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
-      </div>
-    </div>
-    <div class="users-wrapper users-right d-flex flex-column">
-      <div class="user col d-flex align-items-center">
-        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
-        <span>João de almeida</span>
-      </div>
-      <div class="user col d-flex align-items-center">
-        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
-        <span>João de almeida</span>
+    <div v-if="sessionUsersGrouped[0]?.length" class="users-wrapper users-left d-flex flex-column">
+      <div
+        class="user col d-flex align-items-center"
+        v-for="participant in sessionUsersGrouped[0]"
+        :key="participant.session_id"
+      >
+        <span>{{ participant.nickname }}</span>
+        <PokerCard :point="participant.points" isSmall class="active" :isHidden="!isRevealed" />
       </div>
     </div>
-    <div class="users-wrapper users-top d-flex">
-      <div class="user col d-flex align-items-center flex-column text-center">
-        <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
+    <div v-if="sessionUsersGrouped[1]?.length" class="users-wrapper users-right d-flex flex-column">
+      <div
+        class="user col d-flex align-items-center"
+        v-for="participant in sessionUsersGrouped[1]"
+        :key="participant.session_id"
+      >
+        <PokerCard :point="participant.points" isSmall class="active" :isHidden="!isRevealed" />
+        <span>{{ participant.nickname }}</span>
       </div>
-      <div class="user col d-flex align-items-center flex-column text-center">
-        <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
-      </div>
-      <div class="user col d-flex align-items-center flex-column text-center">
-        <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
-      </div>
-      <div class="user col d-flex align-items-center flex-column text-center">
-        <span>João de almeida</span>
-        <PokerCard point="2" isSmall class="active" :isHidden="!isRevealed" />
+    </div>
+    <div v-if="sessionUsersGrouped[2]?.length" class="users-wrapper users-top d-flex">
+      <div
+        class="user col d-flex align-items-center flex-column text-center"
+        v-for="participant in sessionUsersGrouped[1]"
+        :key="participant.session_id"
+      >
+        <span>{{ participant.nickname }}</span>
+        <PokerCard :point="participant.points" isSmall class="active" :isHidden="!isRevealed" />
       </div>
     </div>
     <div class="background"></div>
@@ -52,8 +82,8 @@ const isRevealed = ref()
           Revelar
         </button>
         <div v-else>
-          <span>Média: 4,5</span>
-          <button class="btn btn-info ms-4" @click="isRevealed = !isRevealed">Resetar</button>
+          <span>Média: {{ median.toFixed(2) }}</span>
+          <button class="btn btn-info ms-4" @click="resetGame">Resetar</button>
         </div>
       </div>
     </div>

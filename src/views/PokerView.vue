@@ -2,61 +2,47 @@
 import { useUserStore } from '@/stores/user.store'
 import { useRoute } from 'vue-router'
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRepositoryController } from '@/controllers/repository.controller'
 import { userSchema } from '@/schemas/user.schema'
 import { storeToRefs } from 'pinia'
 import PokerCard from '@/components/PokerCard.vue'
 import PokModal from '@/components/PokModal.vue'
 import PokerTable from '@/components/PokerTable.vue'
+import { useUserController } from '@/controllers/user.controller'
+import { usePokerInit } from '@/composables/pokerInit.composable'
+import { useSessionStore } from '@/stores/session.store'
 
-const { createUser, listenToSession, sessionUsers, updatePoints } = useRepositoryController()
+const { init } = usePokerInit()
+const { createUser, updatePoints } = useUserController()
 const userStore = useUserStore()
+const sessionStore = useSessionStore()
 const route = useRoute()
 const session_id = route.params.session_id
 const nickname = ref('')
-const { user } = storeToRefs(userStore)
-const isModalOpen = ref(!user)
 
 async function enter() {
   if (nickname.value) {
     const user = await createUser(userSchema.cast({ nickname: nickname.value, session_id }))
     if (user) {
-      userStore.user = user[0]
-      isModalOpen.value = false
+      userStore.user = user.data?.[0]
+      await init()
     }
   }
 }
-/*
 
-watch(user, () => {
-  if (user.value) {
-    isModalOpen.value = false
-    listenToSession(session_id.toString())
-  }
-})
-
-onMounted(() => {
-  if (userStore.user?.user_id) listenToSession(session_id.toString())
-  else isModalOpen.value = true
-})
-*/
-
-const points = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
-const currentUserFromSession = computed(() => {
-  console.log(sessionUsers.value)
-  return sessionUsers.value?.find((el) => (el.user_id = user.value?.user_id))
-})
-
-const userPoint = ref<number | null>(null)
+const userPoint = computed(() => userStore.user?.points)
 function handlePoint(point: number) {
-  if (userPoint.value === point) userPoint.value = null
-  else userPoint.value = point
+  if (userStore.user) {
+    if (userPoint.value === point) userStore.user.points = null
+    else userStore.user.points = point
+
+    updatePoints(userStore.user as any)
+  }
 }
 </script>
 
 <template>
   <div class="d-flex vh-100 vw-100 justify-center align-items-center">
-    <PokModal :isOpen="isModalOpen">
+    <PokModal :isOpen="!userStore.user?.nickname">
       <div class="d-flex flex-column gap-2">
         <span>Seu nome</span>
         <input type="text" v-model="nickname" />
@@ -66,16 +52,13 @@ function handlePoint(point: number) {
       </template>
     </PokModal>
     <div class="poker col-12 d-flex justify-content-center align-items-center">
-      <PokerTable>
-        {{ userStore.user }}
-      </PokerTable>
+      <PokerTable />
     </div>
-
     <div class="footer position-fixed vw-100 py-5">
       <div class="container d-flex flex-row align-items-end gap-4">
         <PokerCard
           class="col"
-          v-for="point in points"
+          v-for="point in sessionStore.session?.info?.points"
           :key="point"
           :point="point"
           :class="{ active: point === userPoint, unset: userPoint == null }"

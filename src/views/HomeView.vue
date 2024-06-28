@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRepositoryController } from '@/controllers/repository.controller'
 import { useToast } from 'vue-toastification'
 import { useUserStore } from '@/stores/user.store'
 import { useRouter } from 'vue-router'
+import { useSessionController } from '@/controllers/session.controller'
 
 const nickname = ref('')
-const { createSessionAndUser } = useRepositoryController()
+const { createSessionAndUser } = useSessionController()
 const toast = useToast()
 const router = useRouter()
 const userStore = useUserStore()
@@ -15,8 +15,7 @@ async function startSession() {
   if (!nickname.value) toast.error('Insira seu nome')
   else {
     const user = await createSessionAndUser(nickname.value)
-    if (user) {
-      userStore.user = user[0]
+    if (user.user) {
       await router.push(`/${userStore.user?.session_id}`)
     } else toast.error('Ocorreu um erro para criar a sessão')
   }

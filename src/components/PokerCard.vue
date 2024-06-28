@@ -1,6 +1,9 @@
 <script setup lang="ts">
 defineProps({
-  point: [Number, String],
+  point: {
+    type: [Number],
+    required: false
+  },
   isSmall: Boolean,
   isHidden: Boolean
 })

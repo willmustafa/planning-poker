@@ -5,7 +5,8 @@ export const useUserStore = defineStore('user', {
   persist: true,
   state: () => {
     return {
-      user: null as userType | null
+      user: null as userType | null,
+      usersInSession: [] as userType[]
     }
   }
 })
