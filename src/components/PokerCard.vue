@@ -37,6 +37,15 @@ defineProps({
   transform: translate(-50%, -50%) rotateY(-90deg);
 }
 
+.table-card.not-selected {
+  border: 2px dashed var(--brown);
+  border-radius: var(--border-radius);
+}
+
+.table-card.not-selected .card-hidden {
+  background-image: none;
+}
+
 .card-hidden {
   width: 50px;
   height: 80px;

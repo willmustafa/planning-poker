@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user.store'
 import { useRoute } from 'vue-router'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { userSchema } from '@/schemas/user.schema'
-import { storeToRefs } from 'pinia'
 import PokerCard from '@/components/PokerCard.vue'
 import PokModal from '@/components/PokModal.vue'
 import PokerTable from '@/components/PokerTable.vue'
@@ -45,10 +44,10 @@ function handlePoint(point: number) {
     <PokModal :isOpen="!userStore.user?.nickname">
       <div class="d-flex flex-column gap-2">
         <span>Seu nome</span>
-        <input type="text" v-model="nickname" />
+        <input class="form-control" type="text" v-model="nickname" />
       </div>
       <template #footer>
-        <button type="button" class="btn btn-primary" @click="enter">Entrar</button>
+        <button type="button" class="btn btn-success" @click="enter">Entrar</button>
       </template>
     </PokModal>
     <div class="poker col-12 d-flex justify-content-center align-items-center">

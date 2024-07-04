@@ -34,8 +34,12 @@ defineProps({
 </template>
 
 <style scoped>
+.modal {
+  --bs-modal-bg: var(--background);
+}
+
 .modal-title,
 .modal-body {
-  color: var(--text-color);
+  color: var(--text-color) !important;
 }
 </style>

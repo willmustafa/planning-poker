@@ -8,7 +8,6 @@ import { useUserController } from '@/controllers/user.controller'
 
 export const useSessionController = () => {
   const fetch = fetchClient
-  const session = ref({})
   const sessionStore = useSessionStore()
   const userStore = useUserStore()
   const { createUser } = useUserController()
@@ -58,7 +57,7 @@ export const useSessionController = () => {
           filter: `session_id=eq.${sessionId}`
         },
         (payload) => {
-          session.value = payload.new
+          sessionStore.session = payload.new as any
         }
       )
       .subscribe()
@@ -70,7 +69,6 @@ export const useSessionController = () => {
     listenToSession,
     createSessionAndUser,
     getSession,
-    updateSession,
-    session
+    updateSession
   }
 }

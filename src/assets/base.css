@@ -6,12 +6,14 @@
     --border-radius: 8px;
     --blue-light: #7499D6;
     --blue-dark: #304464;
+    --green: #4aad4a;
+    --brown: #a95555;
 
     --background: var(--light);
     --text-color: var(--dark);
 
-    --table-stroke: #fff;
-    --table-background: #EAEAEA;
+    --table-stroke: var(--brown);
+    --table-background: var(--green);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,8 +21,8 @@
         --background: var(--dark);
         --text-color: var(--light);
 
-        --table-stroke: var(--blue-light);
-        --table-background: var(--blue-dark);
+        --table-stroke: var(--brown);
+        --table-background: var(--green);
     }
 }
 

@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import PokerCard from '@/components/PokerCard.vue'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { userType } from '@/schemas/user.schema'
 import { useUserStore } from '@/stores/user.store'
 import { useUserController } from '@/controllers/user.controller'
 import { useSessionStore } from '@/stores/session.store'
+import { useSessionController } from '@/controllers/session.controller'
 
 const userStore = useUserStore()
 const sessionStore = useSessionStore()
 const isRevealed = computed(() => sessionStore.session?.info.revealed ?? false)
 const { resetPoints } = useUserController()
+const { updateSession } = useSessionController()
 const sessionUsers = computed(() => userStore.usersInSession)
 
 const sessionUsersGrouped = computed(() => {
@@ -34,10 +36,16 @@ const sessionUsersGrouped = computed(() => {
 function resetGame() {
   if (sessionStore.session) sessionStore.session.info.revealed = false
   resetPoints()
+  updateSession()
 }
 
 function reveal() {
   if (sessionStore.session) sessionStore.session.info.revealed = true
+  updateSession()
+}
+
+function setCard() {
+  updateSession()
 }
 
 const median = computed(() => {
@@ -57,7 +65,16 @@ const median = computed(() => {
         :key="participant.session_id"
       >
         <span>{{ participant.nickname }}</span>
-        <PokerCard :point="participant.points" isSmall class="active" :isHidden="!isRevealed" />
+        <PokerCard
+          :point="participant.points"
+          isSmall
+          class="table-card"
+          :isHidden="!isRevealed"
+          :class="{
+            'not-selected': participant.points === null,
+            active: participant.points !== null
+          }"
+        />
       </div>
     </div>
     <div v-if="sessionUsersGrouped[1]?.length" class="users-wrapper users-right d-flex flex-column">
@@ -66,7 +83,16 @@ const median = computed(() => {
         v-for="participant in sessionUsersGrouped[1]"
         :key="participant.session_id"
       >
-        <PokerCard :point="participant.points" isSmall class="active" :isHidden="!isRevealed" />
+        <PokerCard
+          :point="participant.points"
+          isSmall
+          class="table-card"
+          :isHidden="!isRevealed"
+          :class="{
+            'not-selected': participant.points === null,
+            active: participant.points !== null
+          }"
+        />
         <span>{{ participant.nickname }}</span>
       </div>
     </div>
@@ -77,17 +103,34 @@ const median = computed(() => {
         :key="participant.session_id"
       >
         <span>{{ participant.nickname }}</span>
-        <PokerCard :point="participant.points" isSmall class="active" :isHidden="!isRevealed" />
+        <PokerCard
+          :point="participant.points"
+          isSmall
+          class="table-card"
+          :isHidden="!isRevealed"
+          :class="{
+            'not-selected': participant.points === null,
+            active: participant.points !== null
+          }"
+        />
       </div>
     </div>
     <div class="background"></div>
     <div class="info-wrapper d-flex flex-column align-items-center">
       <div class="info mt-auto d-flex gap-1 flex-column align-items-center py-3">
-        <input type="text" class="form-control task-input mb-2" placeholder="Digite o card" />
-        <button class="btn btn-info" v-if="!isRevealed" @click="reveal">Revelar</button>
+        <input
+          v-if="sessionStore.session"
+          type="text"
+          class="form-control task-input mb-2"
+          placeholder="Digite a tarefa"
+          v-model="sessionStore.session.info.card"
+          @blur="setCard"
+          @keyup.enter="setCard"
+        />
+        <button class="btn btn-success" v-if="!isRevealed" @click="reveal">Revelar</button>
         <div v-else>
-          <span>Média: {{ median.toFixed(2) }}</span>
-          <button class="btn btn-info ms-4" @click="resetGame">Resetar</button>
+          <span class="text-white">Média: {{ median.toFixed(2) }}</span>
+          <button class="btn btn-success ms-4" @click="resetGame">Resetar</button>
         </div>
       </div>
     </div>
@@ -95,6 +138,12 @@ const median = computed(() => {
 </template>
 
 <style scoped>
+.form-control::placeholder,
+.form-control {
+  color: rgba(var(--bs-white-rgb), 0.6) !important;
+  background: transparent !important;
+}
+
 .poker-table {
   border: var(--table-stroke) 25px solid;
   border-radius: 120px;
@@ -103,12 +152,38 @@ const median = computed(() => {
   position: relative;
 }
 
+.poker-table::after {
+  content: '';
+  border: 7px solid rgba(0, 0, 0, 0.1);
+  display: block;
+  width: calc(100% + 0px);
+  height: calc(100% + 0px);
+  border-radius: 90px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.poker-table::before {
+  content: '';
+  border: 7px solid rgba(0, 0, 0, 0.1);
+  display: block;
+  width: calc(100% + 48px);
+  height: calc(100% + 51px);
+  border-radius: 120px;
+  position: absolute;
+  top: -26px;
+  left: -24px;
+}
+
 .background {
   background-image: url('@/assets/table.jpg');
   background-size: 150px;
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: calc(100% - 14px);
+  height: calc(100% - 14px);
+  margin-left: 7px;
+  margin-top: 7px;
   border-radius: 90px;
   opacity: 0.1;
 }

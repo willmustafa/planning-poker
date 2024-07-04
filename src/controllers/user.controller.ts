@@ -68,6 +68,8 @@ export const useUserController = () => {
         },
         (payload) => {
           const newPayload = payload.new
+          if (userStore.user && userStore.user?.user_id === newPayload.user_id)
+            userStore.user.points = newPayload.points
           const foundUser = userStore.usersInSession.find((el) => el.user_id === newPayload.user_id)
           if (foundUser) {
             foundUser.points = newPayload.points
