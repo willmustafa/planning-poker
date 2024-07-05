@@ -1,5 +1,4 @@
 import { userSchema, type userType } from '@/schemas/user.schema'
-import { ref, type Ref } from 'vue'
 import { fetchClient } from '@/controllers/fetch.controller'
 import { useUserStore } from '@/stores/user.store'
 
@@ -61,13 +60,13 @@ export const useUserController = () => {
       .on(
         'postgres_changes',
         {
-          event: 'UPDATE',
+          event: '*',
           schema: 'public',
           table: 'session_users',
           filter: `session_id=eq.${sessionId}`
         },
         (payload) => {
-          const newPayload = payload.new
+          const newPayload = payload.new as any
           if (userStore.user && userStore.user?.user_id === newPayload.user_id)
             userStore.user.points = newPayload.points
           const foundUser = userStore.usersInSession.find((el) => el.user_id === newPayload.user_id)

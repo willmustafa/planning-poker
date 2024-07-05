@@ -16,18 +16,12 @@ const sessionUsers = computed(() => userStore.usersInSession)
 
 const sessionUsersGrouped = computed(() => {
   const _sessionUsers = [...sessionUsers.value]
-  const result: userType[][] = []
+  const result: userType[][] = [[], [], []]
 
-  for (let i = 0; i < 2; i++) {
-    if (_sessionUsers.length > 2) {
-      result.push(_sessionUsers.splice(0, 2))
-    } else {
-      break
-    }
-  }
-
-  if (_sessionUsers.length > 0) {
-    result.push(_sessionUsers)
+  for (const [index, _sessionUser] of _sessionUsers.entries()) {
+    if (index < 2) result[0].push(_sessionUser)
+    else if (index < 4) result[1].push(_sessionUser)
+    else result[2].push(_sessionUser)
   }
 
   return result
@@ -99,14 +93,14 @@ const median = computed(() => {
     <div v-if="sessionUsersGrouped[2]?.length" class="users-wrapper users-top d-flex">
       <div
         class="user col d-flex align-items-center flex-column text-center"
-        v-for="participant in sessionUsersGrouped[1]"
+        v-for="participant in sessionUsersGrouped[2]"
         :key="participant.session_id"
       >
         <span>{{ participant.nickname }}</span>
         <PokerCard
           :point="participant.points"
           isSmall
-          class="table-card"
+          class="table-card mt-5"
           :isHidden="!isRevealed"
           :class="{
             'not-selected': participant.points === null,
@@ -223,7 +217,7 @@ const median = computed(() => {
 
 .users-top {
   left: 85px;
-  top: -80px;
+  top: -90px;
   height: 270px;
   width: 80%;
 }

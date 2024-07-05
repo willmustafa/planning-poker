@@ -42,12 +42,12 @@ function handlePoint(point: number) {
 <template>
   <div class="d-flex vh-100 vw-100 justify-center align-items-center">
     <PokModal :isOpen="!userStore.user?.nickname">
-      <div class="d-flex flex-column gap-2">
+      <form @submit.prevent="enter" class="d-flex flex-column gap-2">
         <span>Seu nome</span>
         <input class="form-control" type="text" v-model="nickname" />
-      </div>
+      </form>
       <template #footer>
-        <button type="button" class="btn btn-success" @click="enter">Entrar</button>
+        <button type="submit" class="btn btn-success" @click="enter">Entrar</button>
       </template>
     </PokModal>
     <div class="poker col-12 d-flex justify-content-center align-items-center">

@@ -25,12 +25,12 @@ async function startSession() {
 <template>
   <div class="d-flex vw-100 vh-100 align-items-center justify-content-center flex-column gap-3">
     <h1>Iniciar nova sessão</h1>
-    <div class="d-flex flex-column">
+    <form class="d-flex flex-column" @submit.prevent="startSession">
       <div class="mb-3">
         <label class="form-label">Seu Nome</label>
         <input class="form-control" type="text" name="nickname" v-model="nickname" />
       </div>
-      <button class="btn btn-success" @click="startSession">Começar!</button>
-    </div>
+      <button class="btn btn-success" type="submit">Começar!</button>
+    </form>
   </div>
 </template>
