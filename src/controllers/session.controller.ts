@@ -1,4 +1,4 @@
-import { userSchema } from '@/schemas/user.schema'
+import { userSchema, UserType } from '@/schemas/user.schema'
 import { ref } from 'vue'
 import { fetchClient } from '@/controllers/fetch.controller'
 import type { sessionType } from '@/schemas/session.schema'
@@ -37,7 +37,9 @@ export const useSessionController = () => {
     const user = await createUser(
       userSchema.cast({
         nickname,
-        session_id: session?.[0]?.session_id
+        session_id: session?.[0]?.session_id,
+        type: UserType.PLAYER,
+        is_admin: true
       })
     )
     userStore.user = user.data?.[0] ?? null

@@ -6,7 +6,8 @@ defineProps({
     type: null as unknown as PropType<number | null | undefined>
   },
   isSmall: Boolean,
-  isHidden: Boolean
+  isHidden: Boolean,
+  isRevealed: Boolean
 })
 </script>
 
@@ -14,7 +15,7 @@ defineProps({
   <div>
     <Transition name="flip" mode="out-in">
       <div class="card-hidden" v-if="isHidden"></div>
-      <div v-else class="card-wrapper" :class="{ small: isSmall }">
+      <div v-else class="card-wrapper" :class="{ small: isSmall, revealed: isRevealed }">
         <span class="fixed-point fixed-point-top">{{ point }}</span>
         <div>{{ point }}</div>
         <span class="fixed-point fixed-point-bottom">{{ point }}</span>
@@ -84,7 +85,7 @@ defineProps({
   opacity: 1;
 }
 
-.card-wrapper:not(.small):hover,
+.card-wrapper:not(.small):not(.revealed):hover,
 .active .card-wrapper:not(.small) {
   opacity: 1;
   border-color: #2c8dfe;
@@ -133,5 +134,9 @@ defineProps({
 .fixed-point-bottom {
   right: 0;
   bottom: 0;
+}
+
+.revealed {
+  pointer-events: none;
 }
 </style>

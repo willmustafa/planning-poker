@@ -6,7 +6,16 @@ export const useUserStore = defineStore('user', {
   state: () => {
     return {
       user: null as userType | null,
-      usersInSession: [] as userType[]
+      usersInSession: [] as userType[],
+      observersInSession: [] as userType[]
+    }
+  },
+
+  actions: {
+    resetSession() {
+      this.user = null
+      this.usersInSession = []
+      this.observersInSession = []
     }
   }
 })

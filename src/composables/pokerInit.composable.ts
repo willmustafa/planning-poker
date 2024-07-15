@@ -4,6 +4,7 @@ import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionController } from '@/controllers/session.controller'
 import { useUserController } from '@/controllers/user.controller'
+import { UserType } from '@/schemas/user.schema'
 
 export const usePokerInit = () => {
   const userStore = useUserStore()
@@ -19,10 +20,12 @@ export const usePokerInit = () => {
       sessionStore.session = sessionData?.[0] ?? null
 
       const { data: userData } = await findUsers(session_id)
-      userStore.usersInSession = userData ?? []
+      userStore.usersInSession = userData?.filter((user) => user.type === UserType.PLAYER) ?? []
+      userStore.observersInSession =
+        userData?.filter((user) => user.type === UserType.OBSERVER) ?? []
 
       if (userStore.user && sessionStore.session) {
-        listenToUsers(session_id)
+        listenToUsers(session_id, router)
         listenToSession(session_id)
       }
     }

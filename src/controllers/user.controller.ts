@@ -1,24 +1,24 @@
-import { userSchema, type userType } from '@/schemas/user.schema'
+import { userSchema, UserType, type userType } from '@/schemas/user.schema'
 import { fetchClient } from '@/controllers/fetch.controller'
 import { useUserStore } from '@/stores/user.store'
+import type { Router } from 'vue-router'
+import { useToast } from 'vue-toastification'
 
 export const useUserController = () => {
   const fetch = fetchClient
   const userStore = useUserStore()
+  const toast = useToast()
 
   async function findUsers(session_id: string) {
     return fetch.from('session_users').select().eq('session_id', session_id)
   }
 
   async function createUser(user: userType) {
-    const parsedUser = userSchema.cast(user)
-    return fetch
-      .from('session_users')
-      .insert({
-        nickname: parsedUser.nickname,
-        session_id: parsedUser.session_id
-      })
-      .select()
+    return fetch.from('session_users').insert(userSchema.cast(user)).select()
+  }
+
+  async function removeUser(user: userType) {
+    return fetch.from('session_users').delete().eq('user_id', user.user_id)
   }
 
   async function updatePoints(user: typeof userSchema) {
@@ -54,7 +54,7 @@ export const useUserController = () => {
     }
   }
 
-  function listenToUsers(sessionId: string) {
+  function listenToUsers(sessionId: string, router: Router) {
     fetch
       .channel(`session_users`)
       .on(
@@ -66,14 +66,30 @@ export const useUserController = () => {
           filter: `session_id=eq.${sessionId}`
         },
         (payload) => {
-          const newPayload = payload.new as any
-          if (userStore.user && userStore.user?.user_id === newPayload.user_id)
-            userStore.user.points = newPayload.points
-          const foundUser = userStore.usersInSession.find((el) => el.user_id === newPayload.user_id)
-          if (foundUser) {
-            foundUser.points = newPayload.points
+          if (payload.eventType === 'DELETE') {
+            const oldPayload = payload.old as userType
+            userStore.usersInSession = userStore.usersInSession.filter(
+              (user) => user.user_id !== oldPayload.user_id
+            )
+            if (userStore.user?.user_id === oldPayload.user_id) {
+              userStore.resetSession()
+              router.push('/')
+              toast.error('Você foi removido da sessão')
+            }
           } else {
-            userStore.usersInSession.push(newPayload as any)
+            const newPayload = payload.new as userType
+            if (userStore.user && userStore.user?.user_id === newPayload.user_id)
+              userStore.user.points = newPayload.points
+            const foundUser = userStore.usersInSession.find(
+              (el) => el.user_id === newPayload.user_id
+            )
+            if (foundUser) {
+              foundUser.points = newPayload.points
+            } else if (newPayload.type === UserType.PLAYER) {
+              userStore.usersInSession.push(newPayload as any)
+            } else if (newPayload.type === UserType.OBSERVER) {
+              userStore.observersInSession.push(newPayload as any)
+            }
           }
         }
       )
@@ -85,6 +101,7 @@ export const useUserController = () => {
     listenToUsers,
     findUsers,
     createUser,
-    resetPoints
+    resetPoints,
+    removeUser
   }
 }

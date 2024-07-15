@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user.store'
+import { useUserController } from '@/controllers/user.controller'
 
+const { removeUser } = useUserController()
 const router = useRouter()
-const route = useRoute()
 const userStore = useUserStore()
-function logout() {
-  router.push('/')
-  userStore.user = null
+async function logout() {
+  if (userStore.user) {
+    await router.push('/')
+    removeUser(userStore.user)
+    userStore.user = null
+  }
 }
 </script>
 
@@ -26,7 +30,7 @@ function logout() {
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" v-if="route.path === ''">
+      <div class="collapse navbar-collapse" v-if="userStore.user">
         <ul class="navbar-nav mb-2 mb-lg-0 ms-auto">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="#" @click="logout">Sair</a>
